@@ -8,7 +8,12 @@ public class CountryDateFormat extends MsxBiosViewer {
 	public static final CountryDateFormat INSTANCE = new CountryDateFormat();
 
 	@Override
-	public String getDescription() {
+	public String getKey() {
+		return "dateformat";
+	}
+
+	@Override
+	public String getHeader() {
 		return "Date format";
 	}
 

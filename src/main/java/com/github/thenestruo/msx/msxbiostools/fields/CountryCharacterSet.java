@@ -8,7 +8,12 @@ public class CountryCharacterSet extends MsxBiosViewer {
 	public static final CountryCharacterSet INSTANCE = new CountryCharacterSet();
 
 	@Override
-	public String getDescription() {
+	public String getKey() {
+		return "charset";
+	}
+
+	@Override
+	public String getHeader() {
 		return "Character set";
 	}
 

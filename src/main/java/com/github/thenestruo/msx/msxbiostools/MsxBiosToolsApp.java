@@ -37,6 +37,7 @@ import com.github.thenestruo.msx.msxbiostools.fields.Msx1HasSlotfix;
 import com.github.thenestruo.msx.msxbiostools.fields.MsxVersion;
 import com.github.thenestruo.msx.msxbiostools.fields.Screen0Width;
 import com.github.thenestruo.msx.msxbiostools.fields.ScreenMode;
+import com.github.thenestruo.msx.msxbiostools.support.Patcher;
 import com.github.thenestruo.msx.msxbiostools.support.Viewer;
 import com.github.thenestruo.msx.msxbiostools.support.ViewerGroup;
 
@@ -47,21 +48,23 @@ public class MsxBiosToolsApp {
 	private static final List<Viewer> TEXT_VIEWERS = Arrays.asList(
 			MsxVersion.INSTANCE,
 			new ViewerGroup(
+				"fixes", "Has SLOTFIX and NDEVFIX?",
 				Msx1HasSlotfix.INSTANCE,
 				Msx1HasNdevfix.INSTANCE),
 			new ViewerGroup(
-				"Country",
+				"country",
 				CountryKeyboardType.INSTANCE,
 				CountryBasicVersion.INSTANCE,
 				CountryCharacterSet.INSTANCE,
 				CountryDateFormat.INSTANCE),
 			Frequency.INSTANCE,
+			KeyboardScanAndRepeat.INSTANCE,
 			Delay.INSTANCE,
 			new ViewerGroup(
+				"screen",
 				ScreenMode.INSTANCE,
 				Screen0Width.INSTANCE,
-				BorderColor.INSTANCE),
-			KeyboardScanAndRepeat.INSTANCE
+				BorderColor.INSTANCE)
 		);
 
 	private static final List<Viewer> TSV_VIEWERS = Arrays.asList(
@@ -71,11 +74,11 @@ public class MsxBiosToolsApp {
 			CountryCharacterSet.INSTANCE,
 			MsxVersion.INSTANCE,
 			Frequency.INSTANCE,
+			KeyboardScanAndRepeat.INSTANCE,
+			Delay.INSTANCE,
 			ScreenMode.INSTANCE,
 			Screen0Width.INSTANCE,
 			BorderColor.INSTANCE,
-			KeyboardScanAndRepeat.INSTANCE,
-			Delay.INSTANCE,
 			Msx1HasNdevfix.INSTANCE,
 			Msx1HasSlotfix.INSTANCE
 		);
@@ -114,7 +117,7 @@ public class MsxBiosToolsApp {
 			final List<String> headers = new ArrayList<>();
 			headers.add("Filename");
 			for (Viewer viewer : TSV_VIEWERS) {
-				headers.add(viewer.getDescription());
+				headers.add(viewer.getHeader());
 			}
 			final StringBuilder output = new StringBuilder();
 			try (final CSVPrinter csvPrinter = new CSVPrinter(
@@ -153,6 +156,12 @@ public class MsxBiosToolsApp {
 
 		final Options options = new Options();
 		options.addOption(TSV, "Outputs TSV (Tab separated values)");
+		for (final Viewer viewer : TSV_VIEWERS) {
+			if (viewer instanceof Patcher) {
+				final Patcher patcher = (Patcher) viewer;
+				options.addOption(patcher.getKey(), patcher.getHelp());
+			}
+		}
 		return options;
 	}
 
@@ -180,7 +189,7 @@ public class MsxBiosToolsApp {
 		for (Viewer viewer : viewers) {
 			if (viewer.canView(bios) || includeEmpty) {
 				this.properties.put(
-						viewer.getDescription(),
+						viewer.getKey(),
 						StringUtils.defaultIfBlank(viewer.getValue(bios), "-"));
 			}
 		}

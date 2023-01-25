@@ -8,7 +8,12 @@ public class MsxVersion extends MsxBiosViewer {
 	public static final MsxVersion INSTANCE = new MsxVersion();
 
 	@Override
-	public String getDescription() {
+	public String getKey() {
+		return "msx";
+	}
+
+	@Override
+	public String getHeader() {
 		return "MSX version";
 	}
 

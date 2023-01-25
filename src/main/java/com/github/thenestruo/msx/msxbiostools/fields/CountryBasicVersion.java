@@ -8,7 +8,12 @@ public class CountryBasicVersion extends MsxBiosViewer {
 	public static final CountryBasicVersion INSTANCE = new CountryBasicVersion();
 
 	@Override
-	public String getDescription() {
+	public String getKey() {
+		return "BASIC";
+	}
+
+	@Override
+	public String getHeader() {
 		return "BASIC version";
 	}
 

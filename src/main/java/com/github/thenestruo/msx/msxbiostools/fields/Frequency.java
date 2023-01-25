@@ -1,8 +1,5 @@
 package com.github.thenestruo.msx.msxbiostools.fields;
 
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
-
 import com.github.thenestruo.msx.msxbiostools.support.MsxBiosViewer;
 import com.github.thenestruo.msx.msxbiostools.support.Patcher;
 import com.github.thenestruo.msx.msxbiostools.utils.Memory;
@@ -17,8 +14,13 @@ public class Frequency extends MsxBiosViewer implements Patcher {
 	private static final byte[] PLAY_STATEMENT_TABLE_12000 = new byte[]{ (byte) 0x00, (byte) 0x00, (byte) 0x45, (byte) 0x12 };
 
 	@Override
-	public String getDescription() {
-		return "Frequency";
+	public String getKey() {
+		return "frequency";
+	}
+
+	@Override
+	public String getHelp() {
+		return "Frequency: 50, 60";
 	}
 
 	@Override
@@ -35,11 +37,6 @@ public class Frequency extends MsxBiosViewer implements Patcher {
 		return    playStatementTable == 14400 ? (frequency == 60 ? "60Hz" : "50Hz (wrong PLAY statement table)" )
 				: playStatementTable == 12000 ? (frequency == 50 ? "50Hz" : "60Hz (wrong PLAY statement table)" )
 				: String.format("%dHz (unknown PLAY statement table: %s)", frequency, Memory.toHex(bios, 0x7754, 4));
-	}
-
-	@Override
-	public String getKey() {
-		return "FREQUENCY";
 	}
 
 	@Override

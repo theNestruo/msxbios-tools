@@ -1,16 +1,27 @@
 package com.github.thenestruo.msx.msxbiostools.fields;
 
 import com.github.thenestruo.msx.msxbiostools.support.Msx1BiosViewer;
+import com.github.thenestruo.msx.msxbiostools.support.Patcher;
 import com.github.thenestruo.msx.msxbiostools.utils.Memory;
 import com.github.thenestruo.msx.msxbiostools.utils.Z80;
 
-public class Delay extends Msx1BiosViewer {
+public class Delay extends Msx1BiosViewer implements Patcher {
 
 	public static final Delay INSTANCE = new Delay();
 
 	@Override
-	public String getDescription() {
+	public String getKey() {
+		return "delay";
+	}
+
+	@Override
+	public String getHeader() {
 		return "Initial delay";
+	}
+
+	@Override
+	public String getHelp() {
+		return "Initial delay: 1-6";
 	}
 
 	@Override
@@ -29,4 +40,14 @@ public class Delay extends Msx1BiosViewer {
 				: String.format("unknown (%s)", Memory.toHex(bios, 0x7d0b, 2));
 	}
 
+	@Override
+	public void patchValue(byte[] bios, String newValue) {
+
+		byte newValueByte = Byte.parseByte(newValue);
+		if ((newValueByte < (byte) 1) || (newValueByte > (byte) 6)) {
+			throw new IllegalArgumentException("Invalid value: " + newValue);
+		}
+
+		bios[0x7d0c] = newValueByte;
+	}
 }

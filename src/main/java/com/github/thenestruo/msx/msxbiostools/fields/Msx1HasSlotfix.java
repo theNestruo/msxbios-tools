@@ -9,7 +9,12 @@ public class Msx1HasSlotfix extends Msx1BiosViewer {
 	public static final Msx1HasSlotfix INSTANCE = new Msx1HasSlotfix();
 
 	@Override
-	public String getDescription() {
+	public String getKey() {
+		return "SLOTFIX";
+	}
+
+	@Override
+	public String getHeader() {
 		return "Has SLOTFIX?";
 	}
 

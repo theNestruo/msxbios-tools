@@ -8,6 +8,12 @@ public class Memory {
 				+ Byte.toUnsignedInt(memory[address + 1]) * 0x0100;
 	}
 
+	public static final void set16bits(byte[] memory, int address, int value) {
+
+		memory[address    ] = (byte)  (value & 0x00ff);
+		memory[address + 1] = (byte) ((value & 0xff00) >> 8);
+	}
+
 	public static final boolean check(byte[] memory, int pAddress, byte ... values) {
 
 		int address = pAddress;

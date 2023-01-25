@@ -8,7 +8,12 @@ public class CountryKeyboardType extends MsxBiosViewer {
 	public static final CountryKeyboardType INSTANCE = new CountryKeyboardType();
 
 	@Override
-	public String getDescription() {
+	public String getKey() {
+		return "keyboard";
+	}
+
+	@Override
+	public String getHeader() {
 		return "Keyboard type";
 	}
 

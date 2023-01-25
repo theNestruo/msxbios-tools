@@ -2,7 +2,11 @@ package com.github.thenestruo.msx.msxbiostools.support;
 
 public interface Viewer {
 
-	String getDescription();
+	String getKey();
+
+	default String getHeader() {
+		return this.getKey();
+	}
 
 	boolean canView(byte[] bios);
 

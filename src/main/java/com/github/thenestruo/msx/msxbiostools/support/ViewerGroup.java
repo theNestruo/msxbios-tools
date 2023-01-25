@@ -6,31 +6,40 @@ import java.util.List;
 
 public class ViewerGroup implements Viewer {
 
-	private final String description;
+	private final String key;
+
+	private final String header;
 
 	private final List<Viewer> delegates;
 
-	public ViewerGroup(Viewer ... delegates) {
-		this(null, delegates);
+	public ViewerGroup(String key, Viewer ... delegates) {
+		this(key, null, delegates);
 	}
 
-	public ViewerGroup(String description, Viewer ... delegates) {
+	public ViewerGroup(String key, String header, Viewer ... delegates) {
 		super();
 
-		this.description = description;
+		this.key = key;
+		this.header = header;
 		this.delegates = Arrays.asList(delegates);
 	}
 
 	@Override
-	public String getDescription() {
+	public String getKey() {
 
-		if (this.description != null) {
-			return this.description;
+		return this.key;
+	}
+
+	@Override
+	public String getHeader() {
+
+		if (this.header != null) {
+			return this.header;
 		}
 
 		List<String> list = new ArrayList<>();
 		for (Viewer delegate : this.delegates) {
-			list.add(delegate.getDescription());
+			list.add(delegate.getHeader());
 		}
 		return String.join(", ", list);
 	}
@@ -57,5 +66,4 @@ public class ViewerGroup implements Viewer {
 		}
 		return String.join(", ", list);
 	}
-
 }

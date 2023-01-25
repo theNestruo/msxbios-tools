@@ -10,7 +10,12 @@ public class Msx1HasNdevfix extends Msx1BiosViewer {
 	public static final Msx1HasNdevfix INSTANCE = new Msx1HasNdevfix();
 
 	@Override
-	public String getDescription() {
+	public String getKey() {
+		return "NDEVFIX";
+	}
+
+	@Override
+	public String getHeader() {
 		return "Has NDEVFIX?";
 	}
 
