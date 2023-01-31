@@ -29,6 +29,7 @@ import com.github.thenestruo.msx.msxbiostools.fields.CountryBasicVersion;
 import com.github.thenestruo.msx.msxbiostools.fields.CountryCharacterSet;
 import com.github.thenestruo.msx.msxbiostools.fields.CountryDateFormat;
 import com.github.thenestruo.msx.msxbiostools.fields.CountryKeyboardType;
+import com.github.thenestruo.msx.msxbiostools.fields.Crc32;
 import com.github.thenestruo.msx.msxbiostools.fields.Delay;
 import com.github.thenestruo.msx.msxbiostools.fields.Frequency;
 import com.github.thenestruo.msx.msxbiostools.fields.KeyboardScanAndRepeat;
@@ -37,6 +38,8 @@ import com.github.thenestruo.msx.msxbiostools.fields.Msx1HasSlotfix;
 import com.github.thenestruo.msx.msxbiostools.fields.MsxVersion;
 import com.github.thenestruo.msx.msxbiostools.fields.Screen0Width;
 import com.github.thenestruo.msx.msxbiostools.fields.ScreenMode;
+import com.github.thenestruo.msx.msxbiostools.fields.SystemFont;
+import com.github.thenestruo.msx.msxbiostools.fields.SystemFontAddress;
 import com.github.thenestruo.msx.msxbiostools.support.Patcher;
 import com.github.thenestruo.msx.msxbiostools.support.Viewer;
 import com.github.thenestruo.msx.msxbiostools.support.ViewerGroup;
@@ -46,6 +49,7 @@ public class MsxBiosToolsApp {
 	private static final String TSV = "tsv";
 
 	private static final List<Viewer> TEXT_VIEWERS = Arrays.asList(
+			Crc32.INSTANCE,
 			MsxVersion.INSTANCE,
 			new ViewerGroup(
 				"fixes", "Has SLOTFIX and NDEVFIX?",
@@ -57,6 +61,10 @@ public class MsxBiosToolsApp {
 				CountryBasicVersion.INSTANCE,
 				CountryCharacterSet.INSTANCE,
 				CountryDateFormat.INSTANCE),
+			new ViewerGroup(
+				"font",
+				SystemFontAddress.INSTANCE,
+				SystemFont.INSTANCE),
 			Frequency.INSTANCE,
 			KeyboardScanAndRepeat.INSTANCE,
 			Delay.INSTANCE,
@@ -68,12 +76,15 @@ public class MsxBiosToolsApp {
 		);
 
 	private static final List<Viewer> TSV_VIEWERS = Arrays.asList(
+			Crc32.INSTANCE,
+			MsxVersion.INSTANCE,
+			Frequency.INSTANCE,
 			CountryBasicVersion.INSTANCE,
 			CountryKeyboardType.INSTANCE,
 			CountryDateFormat.INSTANCE,
 			CountryCharacterSet.INSTANCE,
-			MsxVersion.INSTANCE,
-			Frequency.INSTANCE,
+			SystemFontAddress.INSTANCE,
+			SystemFont.INSTANCE,
 			KeyboardScanAndRepeat.INSTANCE,
 			Delay.INSTANCE,
 			ScreenMode.INSTANCE,

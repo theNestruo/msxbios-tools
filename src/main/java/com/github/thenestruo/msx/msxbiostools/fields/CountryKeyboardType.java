@@ -28,6 +28,7 @@ public class CountryKeyboardType extends MsxBiosViewer {
 				: (msxid2 & (byte) 0x0f) == (byte) 0x04 ? "Ger"
 				: (msxid2 & (byte) 0x0f) == (byte) 0x05 ? "Rus"
 				: (msxid2 & (byte) 0x0f) == (byte) 0x06 ? "Spa"
+				: (msxid2 & (byte) 0x0f) == (byte) 0x07 ? "Swe"
 				: String.format("unknown (%02x)", msxid2 & (byte) 0x0f);
 	}
 }

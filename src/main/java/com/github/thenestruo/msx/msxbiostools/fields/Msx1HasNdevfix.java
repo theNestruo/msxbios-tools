@@ -27,7 +27,7 @@ public class Msx1HasNdevfix extends Msx1BiosViewer {
 		}
 
 		final Integer subroutineAddress = Z80.getCallAddress(bios, 0x5600);
-		if (subroutineAddress == null) {
+		if ((subroutineAddress == null) || (subroutineAddress >= 0x8000)) {
 			return String.format("no (%s)", Memory.toHex(bios, 0x5600, 3));
 		}
 
