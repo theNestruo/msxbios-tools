@@ -16,7 +16,9 @@ import java.util.function.Predicate;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.MissingOptionException;
 import org.apache.commons.cli.Options;
+import org.apache.commons.cli.help.HelpFormatter;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.io.FilenameUtils;
@@ -46,7 +48,10 @@ import com.github.thenestruo.msx.msxbiostools.support.ViewerGroup;
 
 public class MsxBiosToolsApp {
 
+	private static final String HELP = "help";
+
 	private static final String TSV = "tsv";
+	private static final String PATCH = "patch";
 
 	private static final List<Viewer> TEXT_VIEWERS = Arrays.asList(
 			Crc32.INSTANCE,
@@ -96,9 +101,20 @@ public class MsxBiosToolsApp {
 
 	public static void main(final String[] args) throws Exception {
 
-		// Parses command line
-		final Options options = options();
-		final CommandLine command = new DefaultParser().parse(options, args);
+		// Parses the command line
+		final Options options = options(true);
+		final CommandLine command;
+		try {
+			command = new DefaultParser().parse(options, args);
+		} catch (final MissingOptionException e) {
+			showUsage(false);
+			return;
+		}
+
+		// Main options
+		if (showUsage(command)) {
+			return;
+		}
 
 		// Builds input file list
 		final Queue<Path> queue = new LinkedList<>();
@@ -163,17 +179,45 @@ public class MsxBiosToolsApp {
 		}
 	}
 
-	private static Options options() {
+	private static Options options(final boolean includePatchOptions) {
 
 		final Options options = new Options();
-		options.addOption(TSV, "Outputs TSV (Tab separated values)");
-		for (final Viewer viewer : TSV_VIEWERS) {
-			if (viewer instanceof Patcher) {
-				final Patcher patcher = (Patcher) viewer;
-				options.addOption(patcher.getKey(), patcher.getHelp());
+		options.addOption(HELP, "Shows usage");
+		options.addOption(TSV, "Outputs TSV (Tab separated values) (view mode only)");
+		options.addOption(PATCH, "Enables patch mode");
+
+		if (includePatchOptions) {
+			for (final Viewer viewer : TSV_VIEWERS) {
+				if (viewer instanceof Patcher) {
+					final Patcher patcher = (Patcher) viewer;
+					options.addOption(patcher.getKey(), patcher.getPatchHelp() + " (patch mode only)");
+				}
 			}
 		}
+
 		return options;
+	}
+
+	private static boolean showUsage(final CommandLine command) throws IOException  {
+
+		return command.hasOption(HELP)
+				? showUsage(command.hasOption(PATCH))
+				: false;
+	}
+
+	private static boolean showUsage(final boolean includePatchOptions) throws IOException {
+
+		// (prints in proper order)
+		HelpFormatter.builder()
+				.setShowSince(false)
+				.get().printHelp(
+					"java -jar msxbiostools.jar <input MSX BIOS file>",
+					null,
+					options(includePatchOptions).getOptions(),
+					null,
+					true);
+
+		return true;
 	}
 
 	/** The input filename */

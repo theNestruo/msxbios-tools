@@ -16,24 +16,19 @@ public class ScreenMode extends Msx1BiosViewer implements Patcher {
 	}
 
 	@Override
-	public String getHeader() {
-		return "Screen mode";
+	public String getPatchHelp() {
+		return "Patch SCREEN: 0 (SCREEN 0/INITXT), 1 (SCREEN 1/INIT32)";
 	}
 
 	@Override
-	public String getHelp() {
-		return "Screen mode: 0 (SCREEN 0/INITXT), 1 (SCREEN 1/INIT32)";
-	}
-
-	@Override
-	public boolean canView(byte[] bios) {
+	public boolean canView(final byte[] bios) {
 
 		return super.canView(bios)
 				&& Memory.check(bios, 0x7d2e, Z80.CALL);
 	}
 
 	@Override
-	public String getValue(byte[] bios) {
+	public String getValue(final byte[] bios) {
 
 		final Integer screenModeAddress = Z80.getCallAddress(bios, 0x7d2e);
 		return    screenModeAddress == null ? String.format("unknown SCREEN (%s)", Memory.toHex(bios, 0x7d2e, 3))
@@ -43,7 +38,7 @@ public class ScreenMode extends Msx1BiosViewer implements Patcher {
 	}
 
 	@Override
-	public void patchValue(byte[] bios, String newValue) {
+	public void patchValue(final byte[] bios, final String newValue) {
 
 		switch (newValue) {
 		case "0":

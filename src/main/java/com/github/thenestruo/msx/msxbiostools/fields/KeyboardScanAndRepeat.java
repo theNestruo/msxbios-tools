@@ -22,12 +22,12 @@ public class KeyboardScanAndRepeat extends MsxBiosViewer implements Patcher {
 	}
 
 	@Override
-	public String getHelp() {
-		return "Keyboard scan and repeat count: 1 (1 39/3), 2 (2 20/1), 3 (3 13/1), F9P (1 32/2)";
+	public String getPatchHelp() {
+		return "Patch keyboard scan and repeat count: 1 (1 39/3), 2 (2 20/1), 3 (3 13/1), F9P (1 32/2)";
 	}
 
 	@Override
-	public boolean canView(byte[] bios) {
+	public boolean canView(final byte[] bios) {
 
 		return super.canView(bios)
 				&& Memory.check(bios, 0x0c96, Z80.LD_HL_INDIRECT_N)
@@ -36,7 +36,7 @@ public class KeyboardScanAndRepeat extends MsxBiosViewer implements Patcher {
 	}
 
 	@Override
-	public String getValue(byte[] bios) {
+	public String getValue(final byte[] bios) {
 
 		final Byte scncntResetValue = Z80.getLdHlIndirectValue(bios, 0x0c96);
 		final Byte repcntResetValue = Z80.getLdHlIndirectValue(bios, 0x0cf0);
@@ -50,7 +50,7 @@ public class KeyboardScanAndRepeat extends MsxBiosViewer implements Patcher {
 	}
 
 	@Override
-	public void patchValue(byte[] bios, String newValue) {
+	public void patchValue(final byte[] bios, final String newValue) {
 
 		switch (newValue) {
 		// Some MSX 1 50Hz (less common)

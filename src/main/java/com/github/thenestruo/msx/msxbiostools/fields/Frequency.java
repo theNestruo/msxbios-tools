@@ -19,12 +19,12 @@ public class Frequency extends MsxBiosViewer implements Patcher {
 	}
 
 	@Override
-	public String getHelp() {
-		return "Frequency: 50, 60";
+	public String getPatchHelp() {
+		return "Patch frequency: 50, 60";
 	}
 
 	@Override
-	public String getValue(byte[] bios) {
+	public String getValue(final byte[] bios) {
 
 		final byte msxid1 = bios[Msx.MSXID1];
 		final int frequency = (msxid1 & (byte) 0x80) == (byte) 0x00 ? 60
@@ -40,15 +40,15 @@ public class Frequency extends MsxBiosViewer implements Patcher {
 	}
 
 	@Override
-	public boolean canPatch(byte[] bios) {
+	public boolean canPatch(final byte[] bios) {
 
-		return canView(bios)
+		return this.canView(bios)
 				&& (Memory.check(bios, 0x7754, PLAY_STATEMENT_TABLE_14400)
 					|| Memory.check(bios, 0x7754, PLAY_STATEMENT_TABLE_12000));
 	}
 
 	@Override
-	public void patchValue(byte[] bios, String newValue) {
+	public void patchValue(final byte[] bios, final String newValue) {
 
 		switch (newValue) {
 		case "60":

@@ -20,19 +20,19 @@ public class Delay extends Msx1BiosViewer implements Patcher {
 	}
 
 	@Override
-	public String getHelp() {
-		return "Initial delay: 1-6";
+	public String getPatchHelp() {
+		return "Patch initial delay: 1..6";
 	}
 
 	@Override
-	public boolean canView(byte[] bios) {
+	public boolean canView(final byte[] bios) {
 
 		return super.canView(bios)
 				&& Memory.check(bios, 0x7d0b, Z80.LD_B_N);
 	}
 
 	@Override
-	public String getValue(byte[] bios) {
+	public String getValue(final byte[] bios) {
 
 		final Byte value = Z80.getLdBValue(bios, 0x7d0b);
 		return value != null
@@ -41,9 +41,9 @@ public class Delay extends Msx1BiosViewer implements Patcher {
 	}
 
 	@Override
-	public void patchValue(byte[] bios, String newValue) {
+	public void patchValue(final byte[] bios, final String newValue) {
 
-		byte newValueByte = Byte.parseByte(newValue);
+		final byte newValueByte = Byte.parseByte(newValue);
 		if ((newValueByte < (byte) 1) || (newValueByte > (byte) 6)) {
 			throw new IllegalArgumentException("Invalid delay value: " + newValue);
 		}

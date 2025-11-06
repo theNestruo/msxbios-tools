@@ -14,29 +14,24 @@ public class Screen0Width extends MsxBiosViewer implements Patcher {
 	}
 
 	@Override
-	public String getHeader() {
-		return "Screen 0 width";
+	public String getPatchHelp() {
+		return "Patch WIDTH: 1..40";
 	}
 
 	@Override
-	public String getHelp() {
-		return "Screen 0 width: 1-40";
-	}
+	public String getValue(final byte[] bios) {
 
-	@Override
-	public String getValue(byte[] bios) {
-
-		byte value = bios[Msx.LINL40 - Msx.RDPRIM + 0x7f27];
-		int iValue = Byte.toUnsignedInt(value);
+		final byte value = bios[Msx.LINL40 - Msx.RDPRIM + 0x7f27];
+		final int iValue = Byte.toUnsignedInt(value);
 		return (iValue > 0 && value <= 80)
 				? String.format("WIDTH %d", iValue)
 				: String.format("unknown WIDTH (%02x)", value);
 	}
 
 	@Override
-	public void patchValue(byte[] bios, String newValue) {
+	public void patchValue(final byte[] bios, final String newValue) {
 
-		byte newValueByte = Byte.parseByte(newValue);
+		final byte newValueByte = Byte.parseByte(newValue);
 		if ((newValueByte < (byte) 1) || (newValueByte > (byte) 40)) {
 			throw new IllegalArgumentException("Invalid WIDTH value: " + newValue);
 		}
