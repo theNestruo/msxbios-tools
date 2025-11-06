@@ -21,9 +21,9 @@ public class CountryCharacterSet extends MsxBiosViewer {
 	public String getValue(byte[] bios) {
 
 		final byte msxid1 = bios[Msx.MSXID1];
-		return    (msxid1 & (byte) 0x0f) == (byte) 0x00 ? "Jap"
-				: (msxid1 & (byte) 0x0f) == (byte) 0x01 ? "Int"
-				: (msxid1 & (byte) 0x0f) == (byte) 0x02 ? "Kor"
-				: String.format("unknown (%02x)", msxid1 & (byte) 0x0f);
+		return    (msxid1 & (byte) 0x0f) == (byte) 0x00 ? "Jap charset"
+				: (msxid1 & (byte) 0x0f) == (byte) 0x01 ? "Int charset"
+				: (msxid1 & (byte) 0x0f) == (byte) 0x02 ? "Kor charset"
+				: String.format("unknown charset (%02x)", msxid1 & (byte) 0x0f);
 	}
 }

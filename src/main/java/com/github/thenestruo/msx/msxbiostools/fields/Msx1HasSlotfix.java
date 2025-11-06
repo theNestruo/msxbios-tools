@@ -22,11 +22,11 @@ public class Msx1HasSlotfix extends Msx1BiosViewer {
 	public String getValue(byte[] bios) {
 
 		if (Memory.check(bios, 0x016f, (byte) 0x00, (byte) 0x00, (byte) 0x00)) {
-			return "no";
+			return "does not have SLOTFIX";
 		}
 		if (Z80.checkCallTo(bios, 0x016f, 0x01ad)) {
-			return "yes";
+			return "has SLOTFIX";
 		}
-		return String.format("unclear (%s)", Memory.toHex(bios, 0x016f, 3));
+		return String.format("unknown SLOTFIX status (%s)", Memory.toHex(bios, 0x016f, 3));
 	}
 }

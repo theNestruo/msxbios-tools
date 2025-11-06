@@ -1,2 +1,3 @@
-list.tsv
+bios/**/*.rom
 target
+*.tsv

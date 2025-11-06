@@ -43,7 +43,7 @@ public class KeyboardScanAndRepeat extends MsxBiosViewer implements Patcher {
 		final Byte repcntInitialValue = Z80.getLdAValue(bios, 0x0d49);
 		return ObjectUtils.allNotNull(scncntResetValue, repcntInitialValue, repcntInitialValue)
 				? String.format("Every %s frame(s) (repetition: %d/%d)", scncntResetValue, repcntInitialValue, repcntResetValue)
-				: String.format("unknown (%s %s %s)",
+				: String.format("unknown SCNCNT (%s %s/%s)",
 						Memory.toHex(bios, 0x0c96, 2),
 						Memory.toHex(bios, 0x0cf0, 2),
 						Memory.toHex(bios, 0x0d49, 2));
@@ -83,7 +83,7 @@ public class KeyboardScanAndRepeat extends MsxBiosViewer implements Patcher {
 			return;
 
 		default:
-			throw new IllegalArgumentException("Invalid value: " + newValue);
+			throw new IllegalArgumentException("Invalid SCNCNT value: " + newValue);
 		}
 	}
 }

@@ -21,14 +21,14 @@ public class CountryKeyboardType extends MsxBiosViewer {
 	public String getValue(byte[] bios) {
 
 		final byte msxid2 = bios[Msx.MSXID2];
-		return    (msxid2 & (byte) 0x0f) == (byte) 0x00 ? "Jap"
-				: (msxid2 & (byte) 0x0f) == (byte) 0x01 ? "Int"
-				: (msxid2 & (byte) 0x0f) == (byte) 0x02 ? "Fre"
-				: (msxid2 & (byte) 0x0f) == (byte) 0x03 ? "UK"
-				: (msxid2 & (byte) 0x0f) == (byte) 0x04 ? "Ger"
-				: (msxid2 & (byte) 0x0f) == (byte) 0x05 ? "Rus"
-				: (msxid2 & (byte) 0x0f) == (byte) 0x06 ? "Spa"
-				: (msxid2 & (byte) 0x0f) == (byte) 0x07 ? "Swe"
-				: String.format("unknown (%02x)", msxid2 & (byte) 0x0f);
+		return    (msxid2 & (byte) 0x0f) == (byte) 0x00 ? "Jap keyboard"
+				: (msxid2 & (byte) 0x0f) == (byte) 0x01 ? "Int keyboard"
+				: (msxid2 & (byte) 0x0f) == (byte) 0x02 ? "Fre keyboard"
+				: (msxid2 & (byte) 0x0f) == (byte) 0x03 ? "UK keyboard"
+				: (msxid2 & (byte) 0x0f) == (byte) 0x04 ? "Ger keyboard"
+				: (msxid2 & (byte) 0x0f) == (byte) 0x05 ? "Rus keyboard"
+				: (msxid2 & (byte) 0x0f) == (byte) 0x06 ? "Spa keyboard"
+				: (msxid2 & (byte) 0x0f) == (byte) 0x07 ? "Swe keyboard"
+				: String.format("unknown keyboard (%02x)", msxid2 & (byte) 0x0f);
 	}
 }

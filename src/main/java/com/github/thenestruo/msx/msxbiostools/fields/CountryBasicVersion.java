@@ -21,8 +21,8 @@ public class CountryBasicVersion extends MsxBiosViewer {
 	public String getValue(byte[] bios) {
 
 		final byte msxid2 = bios[Msx.MSXID2];
-		return    (msxid2 & (byte) 0xf0) == (byte) 0x00 ? "Jap"
-				: (msxid2 & (byte) 0xf0) == (byte) 0x10 ? "Int"
-				: String.format("unknown (%02x)", (byte) (msxid2 & (byte) 0xf0));
+		return    (msxid2 & (byte) 0xf0) == (byte) 0x00 ? "Jap BASIC"
+				: (msxid2 & (byte) 0xf0) == (byte) 0x10 ? "Int BASIC"
+				: String.format("unknown BASIC (%02x)", (byte) (msxid2 & (byte) 0xf0));
 	}
 }

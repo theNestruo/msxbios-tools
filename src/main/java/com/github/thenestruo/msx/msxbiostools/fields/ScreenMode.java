@@ -36,10 +36,10 @@ public class ScreenMode extends Msx1BiosViewer implements Patcher {
 	public String getValue(byte[] bios) {
 
 		final Integer screenModeAddress = Z80.getCallAddress(bios, 0x7d2e);
-		return    screenModeAddress == null ? String.format("unknown (%s)", Memory.toHex(bios, 0x7d2e, 3))
+		return    screenModeAddress == null ? String.format("unknown SCREEN (%s)", Memory.toHex(bios, 0x7d2e, 3))
 				: screenModeAddress == Msx.INITXT ? "SCREEN 0 (INITXT)"
 				: screenModeAddress == Msx.INIT32 ? "SCREEN 1 (INIT32)"
-				: String.format("unknown (%04x)", screenModeAddress);
+				: String.format("unknown SCREEN address (%04x)", screenModeAddress);
 	}
 
 	@Override
@@ -55,7 +55,7 @@ public class ScreenMode extends Msx1BiosViewer implements Patcher {
 			return;
 
 		default:
-			throw new IllegalArgumentException("Invalid value: " + newValue);
+			throw new IllegalArgumentException("Invalid SCREEN value: " + newValue);
 		}
 	}
 }

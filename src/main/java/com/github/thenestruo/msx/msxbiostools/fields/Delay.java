@@ -37,7 +37,7 @@ public class Delay extends Msx1BiosViewer implements Patcher {
 		final Byte value = Z80.getLdBValue(bios, 0x7d0b);
 		return value != null
 				? Byte.toString(value)
-				: String.format("unknown (%s)", Memory.toHex(bios, 0x7d0b, 2));
+				: String.format("unknown delay (%s)", Memory.toHex(bios, 0x7d0b, 2));
 	}
 
 	@Override
@@ -45,7 +45,7 @@ public class Delay extends Msx1BiosViewer implements Patcher {
 
 		byte newValueByte = Byte.parseByte(newValue);
 		if ((newValueByte < (byte) 1) || (newValueByte > (byte) 6)) {
-			throw new IllegalArgumentException("Invalid value: " + newValue);
+			throw new IllegalArgumentException("Invalid delay value: " + newValue);
 		}
 
 		bios[0x7d0c] = newValueByte;

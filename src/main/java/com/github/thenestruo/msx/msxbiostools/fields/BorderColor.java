@@ -35,15 +35,15 @@ public class BorderColor extends MsxBiosViewer implements Patcher {
 		int iValue = Byte.toUnsignedInt(value);
 		return (value >= (byte) 0x00) && (value <= (byte) 0x0f)
 				? String.format("COLOR ,,%d", iValue)
-				: String.format("unknown (%02x)", value);
+				: String.format("unknown BDRCLR (%02x)", value);
 	}
 
 	@Override
 	public void patchValue(byte[] bios, String newValue) {
 
 		byte newValueByte = Byte.parseByte(newValue);
-		if ((newValueByte < (byte) 0) || (newValueByte > (byte) 15)) {
-			throw new IllegalArgumentException("Invalid value: " + newValue);
+		if ((newValueByte < (byte) 0x00) || (newValueByte > (byte) 0x0f)) {
+			throw new IllegalArgumentException("Invalid BDRCLR value: " + newValue);
 		}
 
 		bios[Msx.BDRCLR - Msx.RDPRIM + 0x7f27] = newValueByte;

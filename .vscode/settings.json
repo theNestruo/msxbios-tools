@@ -1,5 +1,10 @@
 {
-	"explorer.excludeGitIgnore": true,
-	"java.configuration.updateBuildConfiguration": "automatic",
-	"java.server.launchMode": "Standard",
+	"files.exclude": {
+		"**/.classpath": true,
+		"**/.project": true,
+		"**/.settings": true,
+		"**/.factorypath": true,
+		"target": true
+	},
+	"java.configuration.updateBuildConfiguration": "interactive",
 }
