@@ -20,10 +20,10 @@ public class Msx1HasNdevfix extends Msx1BiosViewer {
 	}
 
 	@Override
-	public String getValue(byte[] bios) {
+	public String getValue(final byte[] bios) {
 
 		if (Z80.checkLdDeNn(bios, 0x5600, Msx.PROCNM)) {
-			return "no";
+			return "does not have NDEVFIX";
 		}
 
 		final Integer subroutineAddress = Z80.getCallAddress(bios, 0x5600);

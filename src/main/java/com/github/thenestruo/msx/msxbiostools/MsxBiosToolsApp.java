@@ -1,31 +1,25 @@
 package com.github.thenestruo.msx.msxbiostools;
 
-import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Queue;
+import java.util.concurrent.Callable;
 import java.util.function.Predicate;
 
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.MissingOptionException;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.help.HelpFormatter;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.tinylog.Logger;
 
+import com.github.thenestruo.commons.Strings;
+import com.github.thenestruo.commons.io.Paths;
+import com.github.thenestruo.msx.msxbiostools.MsxBiosToolsApp.ViewText;
+import com.github.thenestruo.msx.msxbiostools.MsxBiosToolsApp.ViewTsv;
 import com.github.thenestruo.msx.msxbiostools.fields.BorderColor;
 import com.github.thenestruo.msx.msxbiostools.fields.CountryBasicVersion;
 import com.github.thenestruo.msx.msxbiostools.fields.CountryCharacterSet;
@@ -46,104 +40,144 @@ import com.github.thenestruo.msx.msxbiostools.support.Patcher;
 import com.github.thenestruo.msx.msxbiostools.support.Viewer;
 import com.github.thenestruo.msx.msxbiostools.support.ViewerGroup;
 
-public class MsxBiosToolsApp {
+import picocli.CommandLine;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
+import picocli.CommandLine.Parameters;
 
-	private static final String HELP = "help";
+@Command(name = "msxbiostool", sortOptions = false, subcommands = { ViewText.class, ViewTsv.class }) // , Patch.class })
+public class MsxBiosToolsApp implements Callable<Integer> {
 
-	private static final String TSV = "tsv";
-	private static final String PATCH = "patch";
+	public static void main(final String... args) {
+		System.exit(new CommandLine(new MsxBiosToolsApp()).execute(args));
+	}
 
-	private static final List<Viewer> TEXT_VIEWERS = Arrays.asList(
-			Crc32.INSTANCE,
-			MsxVersion.INSTANCE,
-			new ViewerGroup(
-				"fixes", "Has SLOTFIX and NDEVFIX?",
-				Msx1HasSlotfix.INSTANCE,
-				Msx1HasNdevfix.INSTANCE),
-			new ViewerGroup(
-				"country",
-				CountryKeyboardType.INSTANCE,
-				CountryBasicVersion.INSTANCE,
-				CountryCharacterSet.INSTANCE,
-				CountryDateFormat.INSTANCE),
-			new ViewerGroup(
-				"font",
-				SystemFontAddress.INSTANCE,
-				SystemFont.INSTANCE),
-			Frequency.INSTANCE,
-			KeyboardScanAndRepeat.INSTANCE,
-			Delay.INSTANCE,
-			new ViewerGroup(
-				"screen",
-				ScreenMode.INSTANCE,
-				Screen0Width.INSTANCE,
-				BorderColor.INSTANCE)
-		);
+	@Option(names = { "-h", "--help" }, usageHelp = true, description = "shows usage")
+	private boolean help;
 
-	private static final List<Viewer> TSV_VIEWERS = Arrays.asList(
-			Crc32.INSTANCE,
-			MsxVersion.INSTANCE,
-			Frequency.INSTANCE,
-			CountryBasicVersion.INSTANCE,
-			CountryKeyboardType.INSTANCE,
-			CountryDateFormat.INSTANCE,
-			CountryCharacterSet.INSTANCE,
-			SystemFontAddress.INSTANCE,
-			SystemFont.INSTANCE,
-			KeyboardScanAndRepeat.INSTANCE,
-			Delay.INSTANCE,
-			ScreenMode.INSTANCE,
-			Screen0Width.INSTANCE,
-			BorderColor.INSTANCE,
-			Msx1HasNdevfix.INSTANCE,
-			Msx1HasSlotfix.INSTANCE
-		);
+	@Override
+	public Integer call() throws Exception {
+		return 0;
+	}
 
-	public static void main(final String[] args) throws Exception {
+	@Command(name = "view", sortOptions = false, description = "view MSX BIOS information as plain text")
+	public static class ViewText implements Callable<Integer> {
 
-		// Parses the command line
-		final Options options = options(true);
-		final CommandLine command;
-		try {
-			command = new DefaultParser().parse(options, args);
-		} catch (final MissingOptionException e) {
-			showUsage(false);
-			return;
+		private static final List<Viewer> VIEWERS = Arrays.asList(
+				Crc32.INSTANCE,
+				MsxVersion.INSTANCE,
+				new ViewerGroup(
+						"fixes", "Has SLOTFIX and NDEVFIX?",
+						Msx1HasSlotfix.INSTANCE,
+						Msx1HasNdevfix.INSTANCE),
+				new ViewerGroup(
+						"country",
+						CountryKeyboardType.INSTANCE,
+						CountryBasicVersion.INSTANCE,
+						CountryCharacterSet.INSTANCE,
+						CountryDateFormat.INSTANCE),
+				new ViewerGroup(
+						"font",
+						SystemFontAddress.INSTANCE,
+						SystemFont.INSTANCE),
+				Frequency.INSTANCE,
+				KeyboardScanAndRepeat.INSTANCE,
+				Delay.INSTANCE,
+				new ViewerGroup(
+						"screen",
+						ScreenMode.INSTANCE,
+						Screen0Width.INSTANCE,
+						BorderColor.INSTANCE));
+
+		@Parameters(paramLabel = "input", description = "input MSX BIOS file or directory")
+		private List<Path> inputPaths;
+
+		@Override
+		public Integer call() throws Exception {
+
+			// Builds input file list
+			final List<Path> actualInputPaths = new ArrayList<>();
+			for (final Queue<Path> queue = new LinkedList<>(this.inputPaths); !queue.isEmpty();) {
+				final Path inputPath = queue.poll();
+				if (Files.isDirectory(inputPath)) {
+					Files.list(inputPath).filter(Predicate.not(Files::isDirectory)).forEach(queue::add);
+				} else if (Files.isReadable(inputPath)) {
+					actualInputPaths.add(inputPath);
+				}
+			}
+			if (actualInputPaths.isEmpty()) {
+				return 10;
+			}
+
+			// Visualizes the files
+			for (final Path inputPath : actualInputPaths) {
+				this.logValuesOf(inputPath);
+				Logger.info("");
+			}
+
+			return 0;
 		}
 
-		// Main options
-		if (showUsage(command)) {
-			return;
-		}
+		public void logValuesOf(final Path inputPath) throws IOException {
 
-		// Builds input file list
-		final Queue<Path> queue = new LinkedList<>();
-		for (final String arg : command.getArgList()) {
-			queue.add(Path.of(arg));
-		}
-		final List<Path> inputFiles = new ArrayList<>();
-		while (!queue.isEmpty()) {
-			final Path file = queue.poll();
-			if (Files.isDirectory(file)) {
-				Files.list(file)
-						.filter(Predicate.not(Files::isDirectory))
-						.forEach((f) -> queue.add(f));
-			} else if (Files.isReadable(file)) {
-				inputFiles.add(file);
+			final byte[] bios;
+			try (final InputStream is = Files.newInputStream(inputPath)) {
+				bios = is.readNBytes(0x8000);
+			}
+
+			for (final Viewer viewer : VIEWERS) {
+				if (viewer.canView(bios)) {
+					Logger.info("{}: {}", viewer.getKey(), viewer.getValue(bios));
+				}
 			}
 		}
+	}
 
-		// (sanity check)
-		if (inputFiles.isEmpty()) {
-			return;
-		}
+	@Command(name = "tsv", sortOptions = false, description = "view MSX BIOS information as TSV")
+	public static class ViewTsv implements Callable<Integer> {
 
-		if (command.hasOption(TSV)) {
-			// TSV
+		private static final List<Viewer> VIEWERS = Arrays.asList(
+				Crc32.INSTANCE,
+				MsxVersion.INSTANCE,
+				Frequency.INSTANCE,
+				CountryBasicVersion.INSTANCE,
+				CountryKeyboardType.INSTANCE,
+				CountryDateFormat.INSTANCE,
+				CountryCharacterSet.INSTANCE,
+				SystemFontAddress.INSTANCE,
+				SystemFont.INSTANCE,
+				KeyboardScanAndRepeat.INSTANCE,
+				Delay.INSTANCE,
+				ScreenMode.INSTANCE,
+				Screen0Width.INSTANCE,
+				BorderColor.INSTANCE,
+				Msx1HasNdevfix.INSTANCE,
+				Msx1HasSlotfix.INSTANCE);
 
+		@Parameters(paramLabel = "input", description = "input MSX BIOS file(s)")
+		private List<Path> inputPaths;
+
+		@Override
+		public Integer call() throws Exception {
+
+			// Builds input file list
+			final List<Path> actualInputPaths = new ArrayList<>();
+			for (final Queue<Path> queue = new LinkedList<>(this.inputPaths); !queue.isEmpty();) {
+				final Path inputPath = queue.poll();
+				if (Files.isDirectory(inputPath)) {
+					Files.list(inputPath).filter(Predicate.not(Files::isDirectory)).forEach(queue::add);
+				} else if (Files.isReadable(inputPath)) {
+					actualInputPaths.add(inputPath);
+				}
+			}
+			if (actualInputPaths.isEmpty()) {
+				return 10;
+			}
+
+			// Visualizes the files
 			final List<String> headers = new ArrayList<>();
 			headers.add("Filename");
-			for (final Viewer viewer : TSV_VIEWERS) {
+			for (final Viewer viewer : VIEWERS) {
 				headers.add(viewer.getHeader());
 			}
 			final StringBuilder output = new StringBuilder();
@@ -154,106 +188,88 @@ public class MsxBiosToolsApp {
 							.setDelimiter('\t')
 							.setHeader(headers.toArray(new String[0]))
 							.get())) {
-				for (final Path inputFile : inputFiles) {
-					csvPrinter.printRecord(new MsxBiosToolsApp(inputFile)
-							.view(TSV_VIEWERS, true)
-							.getProperties()
-							.values());
+				for (final Path inputPath : actualInputPaths) {
+					csvPrinter.printRecord(this.recordOfValuesOf(inputPath));
 				}
 			}
 			Logger.info(output);
 
-		} else {
-			// TEXT
+			return 0;
+		}
 
-			for (final Path inputFile : inputFiles) {
-				for (final Map.Entry<String, String> e
-						: new MsxBiosToolsApp(inputFile)
-							.view(TEXT_VIEWERS, false)
-							.getProperties()
-							.entrySet()) {
-					Logger.info("{}: {}", e.getKey(), e.getValue());
-				}
-				Logger.info("");
+		private List<String> recordOfValuesOf(final Path inputPath)
+				throws IOException {
+
+			final byte[] bios;
+			try (final InputStream is = Files.newInputStream(inputPath)) {
+				bios = is.readNBytes(0x8000);
 			}
-		}
-	}
 
-	private static Options options(final boolean includePatchOptions) {
-
-		final Options options = new Options();
-		options.addOption(HELP, "Shows usage");
-		options.addOption(TSV, "Outputs TSV (Tab separated values) (view mode only)");
-		options.addOption(PATCH, "Enables patch mode");
-
-		if (includePatchOptions) {
-			for (final Viewer viewer : TSV_VIEWERS) {
-				if (viewer instanceof Patcher) {
-					final Patcher patcher = (Patcher) viewer;
-					options.addOption(patcher.getKey(), patcher.getPatchHelp() + " (patch mode only)");
-				}
+			final List<String> values = new ArrayList<>();
+			for (final Viewer viewer : VIEWERS) {
+				final String value = viewer.canView(bios) ? viewer.getValue(bios) : null;
+				values.add(Strings.isBlank(value) ? "-" : value);
 			}
+			return values;
 		}
-
-		return options;
 	}
 
-	private static boolean showUsage(final CommandLine command) throws IOException  {
+	@Command(name = "patch", sortOptions = false, description = "Patch")
+	public static class Patch implements Callable<Integer> {
 
-		return command.hasOption(HELP)
-				? showUsage(command.hasOption(PATCH))
-				: false;
-	}
+		private static final List<Patcher> PATCHERS = Arrays.asList(
+//				Crc32.INSTANCE,
+//				MsxVersion.INSTANCE,
+				Frequency.INSTANCE,
+//				CountryBasicVersion.INSTANCE,
+//				CountryKeyboardType.INSTANCE,
+//				CountryDateFormat.INSTANCE,
+//				CountryCharacterSet.INSTANCE,
+//				SystemFontAddress.INSTANCE,
+//				SystemFont.INSTANCE,
+				KeyboardScanAndRepeat.INSTANCE,
+				Delay.INSTANCE,
+				ScreenMode.INSTANCE,
+				Screen0Width.INSTANCE,
+				BorderColor.INSTANCE
+//				Msx1HasNdevfix.INSTANCE,
+//				Msx1HasSlotfix.INSTANCE
+		);
 
-	private static boolean showUsage(final boolean includePatchOptions) throws IOException {
+		@Parameters(index = "0", arity = "1", paramLabel = "input", description = "input MSX BIOS file")
+		private Path inputPath;
 
-		// (prints in proper order)
-		HelpFormatter.builder()
-				.setShowSince(false)
-				.get().printHelp(
-					"java -jar msxbiostools.jar <input MSX BIOS file>",
-					null,
-					options(includePatchOptions).getOptions(),
-					null,
-					true);
+		@Parameters(index = "1",
+				arity = "0..1",
+				paramLabel = "output",
+				description = "output patched MSX BIOS file (optional, defaults to <input>-patched)")
+		private Path outputPath;
 
-		return true;
-	}
+		@Override
+		public Integer call() throws Exception {
 
-	/** The input filename */
-	private final String inputFilename;
-
-	private final Map<String, String> properties = new LinkedHashMap<>();
-
-	public MsxBiosToolsApp(final Path file) {
-		super();
-
-		this.inputFilename = file.toAbsolutePath().toString();
-		this.properties.put("Filename", FilenameUtils.getBaseName(this.inputFilename));
-	}
-
-	public MsxBiosToolsApp view(final List<Viewer> viewers, final boolean includeEmpty) throws IOException {
-
-		final byte[] bios = new byte[0x8000];
-		try (final InputStream is = Files.newInputStream(Path.of(this.inputFilename))) {
-			IOUtils.readFully(is, bios, 0x0000, 0x8000);
-		} catch (final EOFException e) {
-			return this;
-		}
-
-		for (final Viewer viewer : viewers) {
-			if (viewer.canView(bios) || includeEmpty) {
-				this.properties.put(
-						viewer.getKey(),
-						StringUtils.defaultIfBlank(viewer.getValue(bios), "-"));
+			final byte[] bios;
+			try (final InputStream is = Files.newInputStream(this.inputPath)) {
+				bios = is.readNBytes(0x8000);
 			}
+
+//			final Map<Patcher, String> values = patchers
+//					.stream()
+//					.filter(p -> command.hasOption(p.getKey()))
+//					.map(p -> Pair.of(p, command.getOptionValue(p.getKey())))
+//					.collect(Collectors.toMap(Pair::getKey, Pair::getValue));
+//
+//			Logger.info("values = {}", values);
+//
+//			new MsxBiosToolsApp(inputFile)
+//					.patch(values);
+
+			throw new UnsupportedOperationException("Unimplemented method 'patch'");
 		}
 
-		return this;
-	}
+		private Path outputPath(final String suffix) {
 
-	public Map<String, String> getProperties() {
-
-		return new LinkedHashMap<>(this.properties);
+			return this.outputPath != null ? this.outputPath : Paths.append(this.inputPath, suffix);
+		}
 	}
 }

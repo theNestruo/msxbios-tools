@@ -1,8 +1,7 @@
 package com.github.thenestruo.msx.msxbiostools.fields;
 
+import java.util.Arrays;
 import java.util.zip.CRC32;
-
-import org.apache.commons.lang3.ArrayUtils;
 
 import com.github.thenestruo.msx.msxbiostools.support.MsxBiosViewer;
 import com.github.thenestruo.msx.msxbiostools.utils.Memory;
@@ -23,16 +22,16 @@ public class SystemFont extends MsxBiosViewer {
 	}
 
 	@Override
-	public String getValue(byte[] bios) {
+	public String getValue(final byte[] bios) {
 
 		final int cgtabl = Memory.get16bits(bios, Msx.CGTABL);
 
-		CRC32 crc32Builder = new CRC32();
+		final CRC32 crc32Builder = new CRC32();
 		crc32Builder.reset();
-		crc32Builder.update(ArrayUtils.subarray(bios, cgtabl, cgtabl + 0x0800));
+		crc32Builder.update(Arrays.copyOfRange(bios, cgtabl, cgtabl + 0x0800));
 		final long systemFontCrc32 = crc32Builder.getValue();
 
-		return    systemFontCrc32 == 0xdc17e52fL ? "Japanese font"
+		return systemFontCrc32 == 0xdc17e52fL ? "Japanese font"
 				: systemFontCrc32 == 0x1f8f9709L ? "Japanese font (MSX2+)"
 				: systemFontCrc32 == 0x4a576136L ? "Japanese font (C-BIOS)"
 				: systemFontCrc32 == 0xb6a01b07L ? "International font"

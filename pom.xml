@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>com.github.thenestruo</groupId>
 		<artifactId>thenestruo-cli-parent</artifactId>
-		<version>3.0</version>
+		<version>2026.4</version>
 		<relativePath />
 	</parent>
 
@@ -20,11 +20,6 @@
 
 	<dependencies>
 
-		<dependency>
-			<groupId>com.github.thenestruo</groupId>
-			<artifactId>thenestruo-commons</artifactId>
-		</dependency>
-
 		<!-- Apache Commons -->
 		<dependency>
 			<groupId>org.apache.commons</groupId>
@@ -32,6 +27,24 @@
 		</dependency>
 
 	</dependencies>
+
+	<!-- == Build Settings == -->
+
+	<build>
+		<finalName>${project.artifactId}</finalName>
+
+		<plugins>
+
+			<!-- Package the artifact in an uber-jar, including its dependencies -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+			</plugin>
+
+		</plugins>
+	</build>
+
+	<!-- == Environment Settings == -->
 
 	<repositories>
 
@@ -48,19 +61,5 @@
 		</repository>
 
 	</repositories>
-
-	<build>
-		<finalName>${project.artifactId}</finalName>
-
-		<plugins>
-
-			<!-- Package the artifact in an uber-jar, including its dependencies -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-shade-plugin</artifactId>
-			</plugin>
-
-		</plugins>
-	</build>
 
 </project>
