@@ -6,10 +6,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Queue;
 import java.util.concurrent.Callable;
 import java.util.function.Predicate;
@@ -20,6 +18,7 @@ import org.tinylog.Logger;
 
 import com.github.thenestruo.commons.Strings;
 import com.github.thenestruo.commons.maps.Pair;
+import com.github.thenestruo.msx.msxbiostools.MsxBiosToolsApp.Patch;
 import com.github.thenestruo.msx.msxbiostools.MsxBiosToolsApp.ViewText;
 import com.github.thenestruo.msx.msxbiostools.MsxBiosToolsApp.ViewTsv;
 import com.github.thenestruo.msx.msxbiostools.fields.BorderColor;
@@ -47,7 +46,7 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 
-@Command(name = "msxbiostool", sortOptions = false, subcommands = { ViewText.class, ViewTsv.class }) // , Patch.class })
+@Command(name = "msxbiostool", sortOptions = false, subcommands = { ViewText.class, ViewTsv.class, Patch.class })
 public class MsxBiosToolsApp implements Callable<Integer> {
 
 	public static void main(final String... args) {
@@ -219,44 +218,44 @@ public class MsxBiosToolsApp implements Callable<Integer> {
 	@Command(name = "patch", sortOptions = false, description = "Patch")
 	public static class Patch implements Callable<Integer> {
 
-		private static final List<Patcher> PATCHERS = Arrays.asList(
-//				Crc32.INSTANCE,
-//				MsxVersion.INSTANCE,
-				Frequency.INSTANCE,
-//				CountryBasicVersion.INSTANCE,
-//				CountryKeyboardType.INSTANCE,
-//				CountryDateFormat.INSTANCE,
-//				CountryCharacterSet.INSTANCE,
-//				SystemFontAddress.INSTANCE,
-//				SystemFont.INSTANCE,
-				KeyboardScanAndRepeat.INSTANCE,
-				Delay.INSTANCE,
-				ScreenMode.INSTANCE,
-				Screen0Width.INSTANCE,
-				BorderColor.INSTANCE
-//				Msx1HasNdevfix.INSTANCE,
-//				Msx1HasSlotfix.INSTANCE
-		);
-
 		@Parameters(index = "0", arity = "1", paramLabel = "input", description = "input MSX BIOS file")
 		private Path inputPath;
 
 		@Parameters(index = "1", arity = "1", paramLabel = "output", description = "output patched MSX BIOS file")
 		private Path outputPath;
 
-		@Parameters(index = "2", arity = "0..*", paramLabel = "keyValue", description = "keys and values to patch")
-		private List<String> patchKeyValue;
+		@Option(names = { "--" + Frequency.KEY }, description = Frequency.PATCH_HELP)
+		private String frequencyValue;
+
+		@Option(names = { "--" + KeyboardScanAndRepeat.KEY }, description = KeyboardScanAndRepeat.PATCH_HELP)
+		private String keyboardScanAndRepeatValue;
+
+		@Option(names = { "--" + Delay.KEY }, description = Delay.PATCH_HELP)
+		private String delayValue;
+
+		@Option(names = { "--" + ScreenMode.KEY }, description = ScreenMode.PATCH_HELP)
+		private String screenModeValue;
+
+		@Option(names = { "--" + Screen0Width.KEY }, description = Screen0Width.PATCH_HELP)
+		private String screen0WidthValue;
+
+		@Option(names = { "--" + BorderColor.KEY }, description = BorderColor.PATCH_HELP)
+		private String borderColorValue;
 
 		@Override
 		public Integer call() throws Exception {
 
-			if (this.patchKeyValue.size() % 2 != 0) {
-				return 10;
-			}
+			List<Pair<Patcher, String>> patchers = new ArrayList<>();
+			this.addPatcherIfNotEmpty(patchers, Frequency.INSTANCE, this.frequencyValue);
+			this.addPatcherIfNotEmpty(patchers, KeyboardScanAndRepeat.INSTANCE, this.keyboardScanAndRepeatValue);
+			this.addPatcherIfNotEmpty(patchers, Delay.INSTANCE, this.delayValue);
+			this.addPatcherIfNotEmpty(patchers, ScreenMode.INSTANCE, this.screenModeValue);
+			this.addPatcherIfNotEmpty(patchers, Screen0Width.INSTANCE, this.screen0WidthValue);
+			this.addPatcherIfNotEmpty(patchers, BorderColor.INSTANCE, this.borderColorValue);
 
-			final List<Pair<String, String>> keyValueList = new ArrayList<>();
-			for (Iterator<String> it = this.patchKeyValue.iterator(); it.hasNext(); ) {
-				keyValueList.add(Pair.of(it.next(), it.next()));
+			if (patchers.isEmpty()) {
+				Logger.warn("Nothing to patch");
+				return 10;
 			}
 
 			final byte[] bios;
@@ -264,17 +263,13 @@ public class MsxBiosToolsApp implements Callable<Integer> {
 				bios = is.readNBytes(0x8000);
 			}
 
-			for (final Pair<String, String> keyValue : keyValueList) {
-				PATCHERS
-					.stream()
-					.filter(p -> Objects.equals(p.getKey(), keyValue.getKey()))
-					.findFirst()
-					.filter(patcher -> patcher.canPatch(bios))
-					.ifPresent(patcher -> {
-						patcher.patchValue(bios, keyValue.getValue());
-						Logger.info("{}: {}", patcher.getKey(), patcher.getValue(bios));
-					});
-			}
+			patchers.forEach(pair -> {
+				final Patcher patcher = pair.getKey();
+				Logger.info("Patching {}...", patcher.getKey());
+				final String value = pair.getValue();
+				patcher.patchValue(bios, value);
+				Logger.info("{} patched: {}", patcher.getKey(), patcher.getValue(bios));
+			});
 
 //			new MsxBiosToolsApp(inputFile)
 //					.patch(values);
@@ -287,5 +282,14 @@ public class MsxBiosToolsApp implements Callable<Integer> {
 
 		// 	return this.outputPath != null ? this.outputPath : Paths.append(this.inputPath, suffix);
 		// }
+
+		private void addPatcherIfNotEmpty(
+				final List<Pair<Patcher, String>> patchers, final Patcher patcher, final String value) {
+
+			if (Strings.isNotEmpty(value)) {
+				patchers.add(Pair.of(patcher, value));
+			}
+		}
 	}
+
 }

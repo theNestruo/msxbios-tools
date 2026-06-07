@@ -9,9 +9,12 @@ public class Delay extends Msx1BiosViewer implements Patcher {
 
 	public static final Delay INSTANCE = new Delay();
 
+	public static final String KEY = "delay";
+	public static final String PATCH_HELP = "Patch initial delay: 1..6";
+
 	@Override
 	public String getKey() {
-		return "delay";
+		return KEY;
 	}
 
 	@Override
@@ -21,7 +24,7 @@ public class Delay extends Msx1BiosViewer implements Patcher {
 
 	@Override
 	public String getPatchHelp() {
-		return "Patch initial delay: 1..6";
+		return PATCH_HELP;
 	}
 
 	@Override

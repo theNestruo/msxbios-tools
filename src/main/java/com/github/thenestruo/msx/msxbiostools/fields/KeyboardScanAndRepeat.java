@@ -9,9 +9,12 @@ public class KeyboardScanAndRepeat extends MsxBiosViewer implements Patcher {
 
 	public static final KeyboardScanAndRepeat INSTANCE = new KeyboardScanAndRepeat();
 
+	public static final String KEY = "SCNCNT";
+	public static final String PATCH_HELP = "Patch keyboard scan and repeat count: 1 (1 39/3), 2 (2 20/1), 3 (3 13/1), F9P (1 32/2)";
+
 	@Override
 	public String getKey() {
-		return "SCNCNT";
+		return KEY;
 	}
 
 	@Override
@@ -21,7 +24,7 @@ public class KeyboardScanAndRepeat extends MsxBiosViewer implements Patcher {
 
 	@Override
 	public String getPatchHelp() {
-		return "Patch keyboard scan and repeat count: 1 (1 39/3), 2 (2 20/1), 3 (3 13/1), F9P (1 32/2)";
+		return PATCH_HELP;
 	}
 
 	@Override

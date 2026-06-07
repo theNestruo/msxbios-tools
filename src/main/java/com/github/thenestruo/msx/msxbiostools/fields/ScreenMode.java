@@ -10,14 +10,17 @@ public class ScreenMode extends Msx1BiosViewer implements Patcher {
 
 	public static final ScreenMode INSTANCE = new ScreenMode();
 
+	public static final String KEY = "SCREEN";
+	public static final String PATCH_HELP = "Patch SCREEN: 0 (SCREEN 0/INITXT), 1 (SCREEN 1/INIT32)";
+
 	@Override
 	public String getKey() {
-		return "SCREEN";
+		return KEY;
 	}
 
 	@Override
 	public String getPatchHelp() {
-		return "Patch SCREEN: 0 (SCREEN 0/INITXT), 1 (SCREEN 1/INIT32)";
+		return PATCH_HELP;
 	}
 
 	@Override

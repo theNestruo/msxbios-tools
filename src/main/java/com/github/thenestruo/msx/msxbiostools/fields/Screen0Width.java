@@ -8,14 +8,17 @@ public class Screen0Width extends MsxBiosViewer implements Patcher {
 
 	public static final Screen0Width INSTANCE = new Screen0Width();
 
+	public static final String KEY = "WIDTH";
+	public static final String PATCH_HELP = "Patch WIDTH: 1..40";
+
 	@Override
 	public String getKey() {
-		return "WIDTH";
+		return KEY;
 	}
 
 	@Override
 	public String getPatchHelp() {
-		return "Patch WIDTH: 1..40";
+		return PATCH_HELP;
 	}
 
 	@Override

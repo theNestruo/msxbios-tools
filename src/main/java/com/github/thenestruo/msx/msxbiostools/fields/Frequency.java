@@ -9,18 +9,20 @@ public class Frequency extends MsxBiosViewer implements Patcher {
 
 	public static final Frequency INSTANCE = new Frequency();
 
-	private static final byte[] PLAY_STATEMENT_TABLE_14400 = new byte[]{ (byte) 0x40, (byte) 0x00, (byte) 0x45, (byte) 0x14 };
+	public static final String KEY = "frequency";
+	public static final String PATCH_HELP = "Patch frequency: 50, 60";
 
+	private static final byte[] PLAY_STATEMENT_TABLE_14400 = new byte[]{ (byte) 0x40, (byte) 0x00, (byte) 0x45, (byte) 0x14 };
 	private static final byte[] PLAY_STATEMENT_TABLE_12000 = new byte[]{ (byte) 0x00, (byte) 0x00, (byte) 0x45, (byte) 0x12 };
 
 	@Override
 	public String getKey() {
-		return "frequency";
+		return KEY;
 	}
 
 	@Override
 	public String getPatchHelp() {
-		return "Patch frequency: 50, 60";
+		return PATCH_HELP;
 	}
 
 	@Override

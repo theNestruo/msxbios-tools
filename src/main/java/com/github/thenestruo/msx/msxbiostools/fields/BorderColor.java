@@ -7,14 +7,17 @@ public class BorderColor extends Msx1BiosPatcher {
 
 	public static final BorderColor INSTANCE = new BorderColor();
 
+	public static final String KEY = "BDRCLR";
+	public static final String PATCH_HELP = "Patch BDRCLR: 0..15";
+
 	@Override
 	public String getKey() {
-		return "BDRCLR";
+		return KEY;
 	}
 
 	@Override
 	public String getPatchHelp() {
-		return "Patch BDRCLR: 0..15";
+		return PATCH_HELP;
 	}
 
 	@Override
