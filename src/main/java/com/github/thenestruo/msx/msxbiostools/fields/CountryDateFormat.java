@@ -24,6 +24,6 @@ public class CountryDateFormat extends MsxBiosViewer {
 		return    (msxid1 & (byte) 0x70) == (byte) 0x00 ? "Y-M-D"
 				: (msxid1 & (byte) 0x70) == (byte) 0x10 ? "M-D-Y"
 				: (msxid1 & (byte) 0x70) == (byte) 0x20 ? "D-M-Y"
-				: String.format("unknown dateformat (%02x)", msxid1 & (byte) 0x70);
+				: "unknown dateformat (%02x)".formatted(msxid1 & (byte) 0x70);
 	}
 }

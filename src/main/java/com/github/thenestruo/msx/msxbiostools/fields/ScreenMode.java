@@ -21,20 +21,17 @@ public class ScreenMode extends Msx1BiosViewer implements Patcher {
 	}
 
 	@Override
-	public boolean canView(final byte[] bios) {
-
-		return super.canView(bios)
-				&& Memory.check(bios, 0x7d2e, Z80.CALL);
-	}
-
-	@Override
 	public String getValue(final byte[] bios) {
 
+		if (!Memory.check(bios, 0x7d2e, Z80.CALL)) {
+			return null;
+		}
+
 		final Integer screenModeAddress = Z80.getCallAddress(bios, 0x7d2e);
-		return    screenModeAddress == null ? String.format("unknown SCREEN (%s)", Memory.toHex(bios, 0x7d2e, 3))
+		return    screenModeAddress == null ? "unknown SCREEN (%s)".formatted(Memory.toHex(bios, 0x7d2e, 3))
 				: screenModeAddress == Msx.INITXT ? "SCREEN 0 (INITXT)"
 				: screenModeAddress == Msx.INIT32 ? "SCREEN 1 (INIT32)"
-				: String.format("unknown SCREEN address (%04x)", screenModeAddress);
+				: "unknown SCREEN address (%04x)".formatted(screenModeAddress);
 	}
 
 	@Override

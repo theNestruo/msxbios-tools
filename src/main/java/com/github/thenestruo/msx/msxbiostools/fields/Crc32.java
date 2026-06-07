@@ -19,6 +19,6 @@ public class Crc32 extends MsxBiosViewer {
 		CRC32 crc32Builder = new CRC32();
 		crc32Builder.reset();
 		crc32Builder.update(bios);
-		return String.format("%08x", crc32Builder.getValue());
+		return "%08x".formatted(crc32Builder.getValue());
 	}
 }

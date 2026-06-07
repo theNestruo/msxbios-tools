@@ -36,7 +36,7 @@ public class Frequency extends MsxBiosViewer implements Patcher {
 
 		return    playStatementTable == 14400 ? (frequency == 60 ? "60Hz" : "50Hz (incorrect PLAY statement table)" )
 				: playStatementTable == 12000 ? (frequency == 50 ? "50Hz" : "60Hz (incorrect PLAY statement table)" )
-				: String.format("%dHz (unknown PLAY statement table: %s)", frequency, Memory.toHex(bios, 0x7754, 4));
+				: "%dHz (unknown PLAY statement table: %s)".formatted(frequency, Memory.toHex(bios, 0x7754, 4));
 	}
 
 	@Override

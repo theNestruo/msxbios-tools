@@ -6,8 +6,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Queue;
 import java.util.concurrent.Callable;
 import java.util.function.Predicate;
@@ -17,7 +19,7 @@ import org.apache.commons.csv.CSVPrinter;
 import org.tinylog.Logger;
 
 import com.github.thenestruo.commons.Strings;
-import com.github.thenestruo.commons.io.Paths;
+import com.github.thenestruo.commons.maps.Pair;
 import com.github.thenestruo.msx.msxbiostools.MsxBiosToolsApp.ViewText;
 import com.github.thenestruo.msx.msxbiostools.MsxBiosToolsApp.ViewTsv;
 import com.github.thenestruo.msx.msxbiostools.fields.BorderColor;
@@ -239,37 +241,51 @@ public class MsxBiosToolsApp implements Callable<Integer> {
 		@Parameters(index = "0", arity = "1", paramLabel = "input", description = "input MSX BIOS file")
 		private Path inputPath;
 
-		@Parameters(index = "1",
-				arity = "0..1",
-				paramLabel = "output",
-				description = "output patched MSX BIOS file (optional, defaults to <input>-patched)")
+		@Parameters(index = "1", arity = "1", paramLabel = "output", description = "output patched MSX BIOS file")
 		private Path outputPath;
+
+		@Parameters(index = "2", arity = "0..*", paramLabel = "keyValue", description = "keys and values to patch")
+		private List<String> patchKeyValue;
 
 		@Override
 		public Integer call() throws Exception {
+
+			if (this.patchKeyValue.size() % 2 != 0) {
+				return 10;
+			}
+
+			final List<Pair<String, String>> keyValueList = new ArrayList<>();
+			for (Iterator<String> it = this.patchKeyValue.iterator(); it.hasNext(); ) {
+				keyValueList.add(Pair.of(it.next(), it.next()));
+			}
 
 			final byte[] bios;
 			try (final InputStream is = Files.newInputStream(this.inputPath)) {
 				bios = is.readNBytes(0x8000);
 			}
 
-//			final Map<Patcher, String> values = patchers
-//					.stream()
-//					.filter(p -> command.hasOption(p.getKey()))
-//					.map(p -> Pair.of(p, command.getOptionValue(p.getKey())))
-//					.collect(Collectors.toMap(Pair::getKey, Pair::getValue));
-//
-//			Logger.info("values = {}", values);
-//
+			for (final Pair<String, String> keyValue : keyValueList) {
+				PATCHERS
+					.stream()
+					.filter(p -> Objects.equals(p.getKey(), keyValue.getKey()))
+					.findFirst()
+					.filter(patcher -> patcher.canPatch(bios))
+					.ifPresent(patcher -> {
+						patcher.patchValue(bios, keyValue.getValue());
+						Logger.info("{}: {}", patcher.getKey(), patcher.getValue(bios));
+					});
+			}
+
 //			new MsxBiosToolsApp(inputFile)
 //					.patch(values);
 
-			throw new UnsupportedOperationException("Unimplemented method 'patch'");
+			// throw new UnsupportedOperationException("Unimplemented method 'patch'");
+			return 0;
 		}
 
-		private Path outputPath(final String suffix) {
+		// private Path outputPath(final String suffix) {
 
-			return this.outputPath != null ? this.outputPath : Paths.append(this.inputPath, suffix);
-		}
+		// 	return this.outputPath != null ? this.outputPath : Paths.append(this.inputPath, suffix);
+		// }
 	}
 }

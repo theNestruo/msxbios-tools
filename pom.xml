@@ -6,13 +6,13 @@
 	<parent>
 		<groupId>com.github.thenestruo</groupId>
 		<artifactId>thenestruo-cli-parent</artifactId>
-		<version>2026.4</version>
+		<version>2026.6</version>
 		<relativePath />
 	</parent>
 
 	<groupId>com.github.thenestruo.msx.msxbiostools</groupId>
 	<artifactId>msxbiostools</artifactId>
-	<version>1.0</version>
+	<version>2026.6</version>
 
 	<properties>
 		<mainClass>com.github.thenestruo.msx.msxbiostools.MsxBiosToolsApp</mainClass>

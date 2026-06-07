@@ -29,7 +29,7 @@ public class Memory {
 
 		StringBuilder sb = new StringBuilder();
 		for (int i = address, n = address + length; i < n; i++) {
-			sb.append(String.format("%02x", memory[i]));
+			sb.append("%02x".formatted(memory[i]));
 		}
 		return sb.toString();
 

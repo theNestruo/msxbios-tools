@@ -25,19 +25,16 @@ public class Delay extends Msx1BiosViewer implements Patcher {
 	}
 
 	@Override
-	public boolean canView(final byte[] bios) {
-
-		return super.canView(bios)
-				&& Memory.check(bios, 0x7d0b, Z80.LD_B_N);
-	}
-
-	@Override
 	public String getValue(final byte[] bios) {
+
+		if (!Memory.check(bios, 0x7d0b, Z80.LD_B_N)) {
+			return null;
+		}
 
 		final Byte value = Z80.getLdBValue(bios, 0x7d0b);
 		return value != null
 				? Byte.toString(value)
-				: String.format("unknown delay (%s)", Memory.toHex(bios, 0x7d0b, 2));
+				: "unknown delay (%s)".formatted(Memory.toHex(bios, 0x7d0b, 2));
 	}
 
 	@Override

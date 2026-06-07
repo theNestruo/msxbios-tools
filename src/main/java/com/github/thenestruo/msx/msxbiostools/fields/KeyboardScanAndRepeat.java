@@ -25,26 +25,23 @@ public class KeyboardScanAndRepeat extends MsxBiosViewer implements Patcher {
 	}
 
 	@Override
-	public boolean canView(final byte[] bios) {
-
-		return super.canView(bios)
-				&& Memory.check(bios, 0x0c96, Z80.LD_HL_INDIRECT_N)
-				&& Memory.check(bios, 0x0cf0, Z80.LD_HL_INDIRECT_N)
-				&& Memory.check(bios, 0x0d49, Z80.LD_A_N);
-	}
-
-	@Override
 	public String getValue(final byte[] bios) {
+
+		if (!(Memory.check(bios, 0x0c96, Z80.LD_HL_INDIRECT_N)
+				&& Memory.check(bios, 0x0cf0, Z80.LD_HL_INDIRECT_N)
+				&& Memory.check(bios, 0x0d49, Z80.LD_A_N))) {
+			return null;
+		}
 
 		final Byte scncntResetValue = Z80.getLdHlIndirectValue(bios, 0x0c96);
 		final Byte repcntResetValue = Z80.getLdHlIndirectValue(bios, 0x0cf0);
 		final Byte repcntInitialValue = Z80.getLdAValue(bios, 0x0d49);
 		return (scncntResetValue != null) && (repcntResetValue != null) && (repcntInitialValue != null)
-				? String.format("Every %s frame(s) (repetition: %d/%d)",
+				? "Every %s frame(s) (repetition: %d/%d)".formatted(
 						scncntResetValue,
 						repcntInitialValue,
 						repcntResetValue)
-				: String.format("unknown SCNCNT (%s %s/%s)",
+				: "unknown SCNCNT (%s %s/%s)".formatted(
 						Memory.toHex(bios, 0x0c96, 2),
 						Memory.toHex(bios, 0x0cf0, 2),
 						Memory.toHex(bios, 0x0d49, 2));

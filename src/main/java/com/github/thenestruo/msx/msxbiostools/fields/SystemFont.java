@@ -47,6 +47,6 @@ public class SystemFont extends MsxBiosViewer {
 				: systemFontCrc32 == 0xfd9a9b37L ? "Brazilian font (HotBit 1.2)"
 				: systemFontCrc32 == 0xf06e5273L ? "Brazilian font (C-BIOS)"
 				: systemFontCrc32 == 0x6a96416fL ? "Polish font"
-				: String.format("unknown font (CRC32:%08x)", systemFontCrc32);
+				: "unknown font (CRC32:%08x)".formatted(systemFontCrc32);
 	}
 }

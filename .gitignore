@@ -6,5 +6,5 @@ target
 .project
 .settings
 
-bios/**/*.rom
+bios/**
 *.tsv

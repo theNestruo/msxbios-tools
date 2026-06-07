@@ -25,6 +25,6 @@ public class MsxVersion extends MsxBiosViewer {
 				: msxid3 == (byte) 0x01 ? "MSX 2"
 				: msxid3 == (byte) 0x02 ? "MSX 2+"
 				: msxid3 == (byte) 0x03 ? "MSX turbo R"
-				: String.format("unknown MSX version (%02x)", msxid3);
+				: "unknown MSX version (%02x)".formatted(msxid3);
 	}
 }

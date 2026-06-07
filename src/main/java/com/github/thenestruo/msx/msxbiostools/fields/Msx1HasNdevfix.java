@@ -28,13 +28,13 @@ public class Msx1HasNdevfix extends Msx1BiosViewer {
 
 		final Integer subroutineAddress = Z80.getCallAddress(bios, 0x5600);
 		if ((subroutineAddress == null) || (subroutineAddress >= 0x8000)) {
-			return String.format("does not have NDEVFIX (%s)", Memory.toHex(bios, 0x5600, 3));
+			return "does not have NDEVFIX (%s)".formatted(Memory.toHex(bios, 0x5600, 3));
 		}
 
 		if (Z80.checkLdDeNn(bios, subroutineAddress, Msx.PROCNM)) {
 			return subroutineAddress == 0x7fb7 ? "has NDEVFIX" : "has NDEVFIX*";
 		}
 
-		return String.format("unknown NDEVFIX status (%s)", Memory.toHex(bios, subroutineAddress, 3));
+		return "unknown NDEVFIX status (%s)".formatted(Memory.toHex(bios, subroutineAddress, 3));
 	}
 }

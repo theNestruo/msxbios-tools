@@ -16,7 +16,7 @@ public class SystemFontAddress extends MsxBiosViewer {
 	@Override
 	public String getValue(byte[] bios) {
 
-		return String.format("CGTABL at %04x", Memory.get16bits(bios, Msx.CGTABL));
+		return "CGTABL at %04x".formatted(Memory.get16bits(bios, Msx.CGTABL));
 	}
 
 }

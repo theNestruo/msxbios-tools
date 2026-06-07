@@ -24,6 +24,6 @@ public class CountryCharacterSet extends MsxBiosViewer {
 		return    (msxid1 & (byte) 0x0f) == (byte) 0x00 ? "Jap charset"
 				: (msxid1 & (byte) 0x0f) == (byte) 0x01 ? "Int charset"
 				: (msxid1 & (byte) 0x0f) == (byte) 0x02 ? "Kor charset"
-				: String.format("unknown charset (%02x)", msxid1 & (byte) 0x0f);
+				: "unknown charset (%02x)".formatted(msxid1 & (byte) 0x0f);
 	}
 }
