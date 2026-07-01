@@ -17,7 +17,6 @@ public class ViewerGroup implements Viewer {
 	}
 
 	public ViewerGroup(String key, String header, Viewer ... delegates) {
-		super();
 
 		this.key = key;
 		this.header = header;
