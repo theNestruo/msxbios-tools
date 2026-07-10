@@ -97,15 +97,7 @@ public class MsxBiosToolsApp implements Callable<Integer> {
 		public Integer call() throws Exception {
 
 			// Builds input file list
-			final List<Path> actualInputPaths = new ArrayList<>();
-			for (final Queue<Path> queue = new LinkedList<>(this.inputPaths); !queue.isEmpty();) {
-				final Path inputPath = queue.poll();
-				if (Files.isDirectory(inputPath)) {
-					Files.list(inputPath).filter(Predicate.not(Files::isDirectory)).forEach(queue::add);
-				} else if (Files.isReadable(inputPath)) {
-					actualInputPaths.add(inputPath);
-				}
-			}
+			final List<Path> actualInputPaths = actualInputPathsFrom(this.inputPaths);
 			if (actualInputPaths.isEmpty()) {
 				return 10;
 			}
@@ -162,18 +154,7 @@ public class MsxBiosToolsApp implements Callable<Integer> {
 		public Integer call() throws Exception {
 
 			// Builds input file list
-			final List<Path> actualInputPaths = new ArrayList<>();
-			for (final Queue<Path> queue = new LinkedList<>(this.inputPaths); !queue.isEmpty();) {
-				final Path inputPath = queue.poll();
-				if (Files.isDirectory(inputPath)) {
-					Files.list(inputPath).filter(Predicate.not(Files::isDirectory)).forEach(queue::add);
-				} else if (Files.isReadable(inputPath)) {
-					actualInputPaths.add(inputPath);
-				}
-			}
-			if (actualInputPaths.isEmpty()) {
-				return 10;
-			}
+			final List<Path> actualInputPaths = actualInputPathsFrom(this.inputPaths);
 
 			// Visualizes the files
 			final List<String> headers = new ArrayList<>();
@@ -292,4 +273,23 @@ public class MsxBiosToolsApp implements Callable<Integer> {
 		}
 	}
 
+	private static List<Path> actualInputPathsFrom(final List<Path> inputPaths) throws IOException {
+
+		if ((inputPaths == null) || inputPaths.isEmpty()) {
+			return List.of();
+		}
+
+		// Builds input file list
+		final List<Path> actualInputPaths = new ArrayList<>();
+		for (final Queue<Path> queue = new LinkedList<>(inputPaths); !queue.isEmpty();) {
+			final Path inputPath = queue.poll();
+			if (Files.isDirectory(inputPath)) {
+				Files.list(inputPath).filter(Predicate.not(Files::isDirectory)).forEach(queue::add);
+			} else if (Files.isReadable(inputPath)) {
+				actualInputPaths.add(inputPath);
+			}
+		}
+
+		return actualInputPaths;
+	}
 }
