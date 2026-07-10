@@ -1,19 +1,33 @@
 package com.github.thenestruo.msx.msxbiostools.fields;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.zip.CRC32;
 
-import com.github.thenestruo.msx.msxbiostools.support.MsxBiosViewer;
+import org.tinylog.Logger;
+
+import com.github.thenestruo.msx.msxbiostools.support.Msx1BiosPatcher;
 import com.github.thenestruo.msx.msxbiostools.utils.Memory;
 import com.github.thenestruo.msx.msxbiostools.utils.Msx;
 
-public class SystemFont extends MsxBiosViewer {
+public class SystemFont extends Msx1BiosPatcher {
 
 	public static final SystemFont INSTANCE = new SystemFont();
 
+	public static final String KEY = "font";
+	public static final String PATCH_HELP = "Patch font: <input file>";
+
 	@Override
 	public String getKey() {
-		return "font";
+		return KEY;
+	}
+
+	@Override
+	public String getPatchHelp() {
+		return PATCH_HELP;
 	}
 
 	@Override
@@ -52,5 +66,28 @@ public class SystemFont extends MsxBiosViewer {
 				: systemFontCrc32 == 0x37c99bb6L ? "Russian font"
 				//
 				: "unknown font (CRC32:%08x)".formatted(systemFontCrc32);
+	}
+
+	@Override
+	public void patchValue(final byte[] bios, final String fontFilename) {
+
+		final Path fontPath = Path.of(fontFilename);
+		if (!Files.isReadable(fontPath)) {
+			Logger.warn("Cannot patch {}: {} is not readable", KEY, fontFilename);
+			return;
+		}
+
+		final byte[] font;
+		try (final InputStream is = Files.newInputStream(fontPath)) {
+			font = is.readNBytes(0x0800);
+		} catch (IOException e) {
+			Logger.warn("Cannot patch {}: {}:", KEY, fontFilename, e);
+			return;
+		}
+
+		final int cgtabl = Memory.get16bits(bios, Msx.CGTABL);
+		for (int from = 0x0000, to = cgtabl; from < 0x0800; from++, to++) {
+			bios[to] = font[from];
+		}
 	}
 }

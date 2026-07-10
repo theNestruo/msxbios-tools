@@ -208,6 +208,9 @@ public class MsxBiosToolsApp implements Callable<Integer> {
 		@Option(names = { "--" + Frequency.KEY }, description = Frequency.PATCH_HELP)
 		private String frequencyValue;
 
+		@Option(names = { "--" + SystemFont.KEY }, description = SystemFont.PATCH_HELP)
+		private String systemFontValue;
+
 		@Option(names = { "--" + KeyboardScanAndRepeat.KEY }, description = KeyboardScanAndRepeat.PATCH_HELP)
 		private String keyboardScanAndRepeatValue;
 
@@ -228,6 +231,7 @@ public class MsxBiosToolsApp implements Callable<Integer> {
 
 			List<Pair<Patcher, String>> patchers = new ArrayList<>();
 			this.addPatcherIfNotEmpty(patchers, Frequency.INSTANCE, this.frequencyValue);
+			this.addPatcherIfNotEmpty(patchers, SystemFont.INSTANCE, this.systemFontValue);
 			this.addPatcherIfNotEmpty(patchers, KeyboardScanAndRepeat.INSTANCE, this.keyboardScanAndRepeatValue);
 			this.addPatcherIfNotEmpty(patchers, Delay.INSTANCE, this.delayValue);
 			this.addPatcherIfNotEmpty(patchers, ScreenMode.INSTANCE, this.screenModeValue);
@@ -246,6 +250,12 @@ public class MsxBiosToolsApp implements Callable<Integer> {
 
 			patchers.forEach(pair -> {
 				final Patcher patcher = pair.getKey();
+
+				if (!patcher.canPatch(bios)) {
+					Logger.warn("{} cannot be patched", patcher.getKey());
+					return;
+				}
+
 				Logger.info("Patching {}...", patcher.getKey());
 				final String value = pair.getValue();
 				patcher.patchValue(bios, value);
