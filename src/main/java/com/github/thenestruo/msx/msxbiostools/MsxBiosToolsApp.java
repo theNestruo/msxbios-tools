@@ -29,6 +29,7 @@ import com.github.thenestruo.msx.msxbiostools.fields.CountryKeyboardType;
 import com.github.thenestruo.msx.msxbiostools.fields.Crc32;
 import com.github.thenestruo.msx.msxbiostools.fields.Delay;
 import com.github.thenestruo.msx.msxbiostools.fields.Frequency;
+import com.github.thenestruo.msx.msxbiostools.fields.FunctionKeys;
 import com.github.thenestruo.msx.msxbiostools.fields.KeyboardScanAndRepeat;
 import com.github.thenestruo.msx.msxbiostools.fields.Msx1HasNdevfix;
 import com.github.thenestruo.msx.msxbiostools.fields.Msx1HasSlotfix;
@@ -88,7 +89,8 @@ public class MsxBiosToolsApp implements Callable<Integer> {
 						"screen",
 						ScreenMode.INSTANCE,
 						Screen0Width.INSTANCE,
-						BorderColor.INSTANCE));
+						BorderColor.INSTANCE),
+				FunctionKeys.INSTANCE);
 
 		@Parameters(paramLabel = "input", description = "input MSX BIOS file or directory")
 		private List<Path> inputPaths;
