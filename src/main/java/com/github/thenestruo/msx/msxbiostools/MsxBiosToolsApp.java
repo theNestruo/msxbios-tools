@@ -190,6 +190,7 @@ public class MsxBiosToolsApp implements Callable<Integer> {
 			}
 
 			final List<String> values = new ArrayList<>();
+			values.add(inputPath.toString());
 			for (final Viewer viewer : VIEWERS) {
 				final String value = viewer.canView(bios) ? viewer.getValue(bios) : null;
 				values.add(Strings.isBlank(value) ? "-" : value);

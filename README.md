@@ -1,6 +1,27 @@
 # msxbios-tools
 
-## Example output
+```
+java -jar target\msxbiostools.jar -h
+
+Usage: msxbiostool [-h] [COMMAND]
+  -h, --help   shows usage
+Commands:
+  view   view MSX BIOS information as plain text
+  tsv    view MSX BIOS information as TSV
+  patch  Patch
+```
+
+## View MSX BIOS information as plain text
+
+```
+java -jar target\msxbiostools.jar view
+
+Usage: msxbiostool view [input...]
+view MSX BIOS information as plain text
+      [input...]   input MSX BIOS file or directory
+```
+
+### Example output
 
 ```sh
 java -jar ./target/msxbiostools.jar view ./bios/reference/Canon_V_20.rom
@@ -18,7 +39,17 @@ delay: 6
 screen: SCREEN 0 (INITXT), WIDTH 37, COLOR ,,4
 ```
 
-## Example TSV output
+## View MSX BIOS information as TSV
+
+```
+java -jar target\msxbiostools.jar tsv
+
+Usage: msxbiostool tsv [input...]
+view MSX BIOS information as TSV
+      [input...]   input MSX BIOS file(s)
+```
+
+### Example output
 
 ```sh
 java -jar ./target/msxbiostools.jar tsv ./bios/reference
@@ -59,7 +90,40 @@ java -jar ./target/msxbiostools.jar tsv ./bios/reference
 | Yamaha_CX5MII			| 507b2caa	| MSX 1			| 50Hz		| Int BASIC		| Int keyboard	| M-D-Y			| Int charset	| CGTABL at 1bbf	| International font		| Every 1 frame(s) (repetition: 39/3)	| 6				| SCREEN 0 (INITXT)	| WIDTH 37	| COLOR ,,4	| has NDEVFIX			| has SLOTFIX			|
 | Yamaha_YIS_503IIR		| e751d55c	| MSX 1			| 60Hz		| Int BASIC		| Int keyboard	| M-D-Y			| Int charset	| CGTABL at 1bbf	| Russian font				| Every 3 frame(s) (repetition: 13/1)	| 6				| SCREEN 0 (INITXT)	| WIDTH 39	| COLOR ,,4	| has NDEVFIX			| has SLOTFIX			|
 
-## System font references
+## Patch
+
+```
+java -jar target\msxbiostools.jar patch
+
+Usage: msxbiostool patch [--BDRCLR=<borderColorValue>] [--delay=<delayValue>]
+                         [--font=<systemFontValue>]
+                         [--frequency=<frequencyValue>]
+                         [--SCNCNT=<keyboardScanAndRepeatValue>]
+                         [--SCREEN=<screenModeValue>]
+                         [--WIDTH=<screen0WidthValue>] input output
+Patch
+      input                  input MSX BIOS file
+      output                 output patched MSX BIOS file
+      --frequency=<frequencyValue>
+                             Patch frequency: 50, 60
+      --font=<systemFontValue>
+                             Patch font: <input file>
+      --SCNCNT=<keyboardScanAndRepeatValue>
+                             Patch keyboard scan and repeat count: 1 (1 39/3),
+                               2 (2 20/1), 3 (3 13/1), F9P (1 32/2)
+      --delay=<delayValue>   Patch initial delay: 1..6
+      --SCREEN=<screenModeValue>
+                             Patch SCREEN: 0 (SCREEN 0/INITXT), 1 (SCREEN
+                               1/INIT32)
+      --WIDTH=<screen0WidthValue>
+                             Patch WIDTH: 1..40
+      --BDRCLR=<borderColorValue>
+                             Patch BDRCLR: 0..15
+```
+
+# References
+
+## System fonts
 
 | crc32		| description						| image	|
 |-----------|-----------------------------------|-------|
@@ -82,7 +146,7 @@ java -jar ./target/msxbiostools.jar tsv ./bios/reference
 | 6a96416f	| Polish font						| ![](./charset/reference/Pol.6A96416F.png) |
 | 37c99bb6	| Russian font						| ![](./charset/reference/Rus.37C99BB6.png) |
 
-## Sony HitBit font references
+## Sony HitBit fonts
 
 | Description				| image |
 |---------------------------|-------|
